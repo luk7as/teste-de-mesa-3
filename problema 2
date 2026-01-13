@@ -1,0 +1,106 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Menu menu = new Menu();
+        menu.Exibir();
+    }
+}
+
+class CalculadoraJuros
+{
+    public double CalcularMontante(double valor, double taxa, int periodo)
+    {
+        return valor * Math.Pow(1 + taxa, periodo);
+    }
+}
+
+class Menu
+{
+    private CalculadoraJuros calculadora = new CalculadoraJuros();
+    private int periodo = 8 + 10 / 30;
+
+    
+    private double[] taxas = new double[] { 0.03, 0.0248, 0.02 };
+
+    public void Exibir()
+    {
+        Console.WriteLine("=== CALCULADORA DE JUROS COMPOSTOS ===");
+
+        
+        Console.WriteLine("Escolha uma opção de capital inicial:");
+        Console.WriteLine("1 - 1000");
+        Console.WriteLine("2 - 5500");
+        Console.WriteLine("3 - 12000");
+
+        int opcaoCapital;
+        while (!int.TryParse(Console.ReadLine(), out opcaoCapital) || opcaoCapital < 1 || opcaoCapital > 3)
+        {
+            Console.WriteLine("Opção inválida. Tente novamente.");
+        }
+
+        double capital = opcaoCapital switch
+        {
+            1 => 1000,
+            2 => 5000,
+            3 => 10000,
+        };
+
+        
+        Console.WriteLine($"\nTabela de Juros Compostos - Capital inicial: {capital}, Período: {periodo} meses\n");
+
+        
+        Console.Write("Mês\t");
+        for (int i = 0; i < taxas.Length; i++)
+        {
+            Console.Write($"{taxas[i] * 100:F0}%\t");
+        }
+        Console.WriteLine("\n---\t-----------------------------");
+
+        // Tabela
+        for (int mes = 1; mes <= periodo; mes++)
+        {
+            Console.Write($"{mes}\t");
+            foreach (var taxa in taxas)
+            {
+                double montante = calculadora.CalcularMontante(capital, taxa, mes);
+                Console.Write($"{montante:F2}\t");
+            }
+            Console.WriteLine();
+
+
+
+
+            for ( mes = 1; mes <= periodo; mes++)
+            {
+                Console.Write($"{mes}\t");
+
+                for (int i = 0; i < taxas.Length; i++)
+                {
+                    // Calcula o juros apenas para este mês
+                    double montante = capital * taxas[i];
+                    double capitalComJuros = capital + montante;
+                    Console.Write($"{capitalComJuros:F2}\t");
+                }
+
+                Console.WriteLine();
+
+                // Resgate no 5º mês
+                if (mes == 5)
+                {
+                    double resgate = 1000;
+                    capital -= resgate;
+                    Console.WriteLine($"No mês {mes}, foi feito um resgate de {resgate}. Capital restante: {capital:F2}");
+                }
+
+                // Atualiza capital para o próximo mês (considerando a primeira taxa, ou se quiser, média)
+                capital = capital * (1 + taxas[0]); // ou outra lógica se quiser diferentes taxas
+            }
+
+
+
+        }
+    }
+}
