@@ -11,64 +11,71 @@ class Program
 
 class CalculadoraJuros
 {
-    public double CalcularMontante(double valor, double taxa, int periodo)
+    public double CalcularMontante(double valorPresente, double taxa, double periodo)
     {
-        return valor * Math.Pow(1 + taxa, periodo);
+        return valorPresente * Math.Pow(1 + taxa, periodo);
     }
 }
 
 class Menu
 {
     private CalculadoraJuros calculadora = new CalculadoraJuros();
-    private int periodo = 8 + 10 / 30;
 
-    
-    private double[] taxas = new double[] { 0.03, 0.0248, 0.02 };
+    // 8 meses + 10 dias
+    private double periodo = 8 + (10.0 / 30.0);
 
     public void Exibir()
     {
-        Console.WriteLine("=== CALCULADORA DE JUROS COMPOSTOS ===");
+        Console.WriteLine("=== CALCULADORA DE JUROS COMPOSTOS ===\n");
 
-        
-        Console.WriteLine("Escolha uma opção de capital inicial:");
+        // MENU VALOR INVESTIDO
+        Console.WriteLine("Escolha o Valor Presente Investido:");
         Console.WriteLine("1 - 1000");
         Console.WriteLine("2 - 5500");
         Console.WriteLine("3 - 12000");
 
-        int opcaoCapital;
-        while (!int.TryParse(Console.ReadLine(), out opcaoCapital) || opcaoCapital < 1 || opcaoCapital > 3)
+        int opcaoValor;
+        while (!int.TryParse(Console.ReadLine(), out opcaoValor) || opcaoValor < 1 || opcaoValor > 3)
         {
-            Console.WriteLine("Opção inválida. Tente novamente.");
+            Console.WriteLine("Opção inválida. Digite novamente:");
         }
 
-        double capital = opcaoCapital switch
+        double capital = opcaoValor switch
         {
             1 => 1000,
-            2 => 5000,
-            3 => 10000,
+            2 => 5500,
+            3 => 12000
         };
 
-        // Exibe a tabela
-        Console.WriteLine($"\nTabela de Juros Compostos - Capital inicial: {capital}, Período: {periodo} meses\n");
+        // MENU TAXA DE JUROS
+        Console.WriteLine("\nEscolha a Taxa de Juros Mensal:");
+        Console.WriteLine("1 - 3%");
+        Console.WriteLine("2 - 2,48%");
+        Console.WriteLine("3 - 2%");
 
-        // Cabeçalho
-        Console.Write("Mês\t");
-        for (int i = 0; i < taxas.Length; i++)
+        int opcaoTaxa;
+        while (!int.TryParse(Console.ReadLine(), out opcaoTaxa) || opcaoTaxa < 1 || opcaoTaxa > 3)
         {
-            Console.Write($"{taxas[i] * 100:F0}%\t");
+            Console.WriteLine("Opção inválida. Digite novamente:");
         }
-        Console.WriteLine("\n---\t-----------------------------");
 
-        // Tabela
-        for (int mes = 1; mes <= periodo; mes++)
+        double taxa = opcaoTaxa switch
         {
-            Console.Write($"{mes}\t");
-            foreach (var taxa in taxas)
-            {
-                double montante = calculadora.CalcularMontante(capital, taxa, mes);
-                Console.Write($"{montante:F2}\t");
-            }
-            Console.WriteLine();
-        }
+            1 => 0.03,
+            2 => 0.0248,
+            3 => 0.02
+        };
+
+        // Cálculo
+        double montante = calculadora.CalcularMontante(capital, taxa, periodo);
+        double rendimento = montante - capital;
+
+        // Tabela de saída
+        Console.WriteLine("\n----------------------------------------------------");
+        Console.WriteLine("Valor\tTaxa\tPeríodo (meses)\tRendimento\tMontante");
+        Console.WriteLine("----------------------------------------------------");
+
+        Console.WriteLine($"{capital}\t{taxa * 100}%\t{periodo:F2}\t\t{rendimento:F2}\t\t{montante:F2}");
+        Console.WriteLine("----------------------------------------------------");
     }
 }
