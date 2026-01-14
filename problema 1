@@ -21,14 +21,16 @@ class Menu
 {
     private CalculadoraJuros calculadora = new CalculadoraJuros();
 
-    // 8 meses + 10 dias
-    private double periodo = 8 + (10.0 / 30.0);
+    private int meses = 8;
+    private int dias = 10;
 
     public void Exibir()
     {
+        double periodoCalculo = meses + (dias / 30.0);
+
         Console.WriteLine("=== CALCULADORA DE JUROS COMPOSTOS ===\n");
 
-        // MENU VALOR INVESTIDO
+        // MENU VALOR
         Console.WriteLine("Escolha o Valor Presente Investido:");
         Console.WriteLine("1 - 1000");
         Console.WriteLine("2 - 5500");
@@ -37,7 +39,7 @@ class Menu
         int opcaoValor;
         while (!int.TryParse(Console.ReadLine(), out opcaoValor) || opcaoValor < 1 || opcaoValor > 3)
         {
-            Console.WriteLine("Opção inválida. Digite novamente:");
+            Console.WriteLine("Opção inválida.");
         }
 
         double capital = opcaoValor switch
@@ -47,7 +49,7 @@ class Menu
             3 => 12000
         };
 
-        // MENU TAXA DE JUROS
+        // MENU TAXA
         Console.WriteLine("\nEscolha a Taxa de Juros Mensal:");
         Console.WriteLine("1 - 3%");
         Console.WriteLine("2 - 2,48%");
@@ -56,7 +58,7 @@ class Menu
         int opcaoTaxa;
         while (!int.TryParse(Console.ReadLine(), out opcaoTaxa) || opcaoTaxa < 1 || opcaoTaxa > 3)
         {
-            Console.WriteLine("Opção inválida. Digite novamente:");
+            Console.WriteLine("Opção inválida.");
         }
 
         double taxa = opcaoTaxa switch
@@ -67,15 +69,15 @@ class Menu
         };
 
         // Cálculo
-        double montante = calculadora.CalcularMontante(capital, taxa, periodo);
+        double montante = calculadora.CalcularMontante(capital, taxa, periodoCalculo);
         double rendimento = montante - capital;
 
-        // Tabela de saída
+        // SAÍDA
         Console.WriteLine("\n----------------------------------------------------");
-        Console.WriteLine("Valor\tTaxa\tPeríodo (meses)\tRendimento\tMontante");
+        Console.WriteLine("Valor\tTaxa\tPeríodo\t\tRendimento\tMontante");
         Console.WriteLine("----------------------------------------------------");
 
-        Console.WriteLine($"{capital}\t{taxa * 100}%\t{periodo:F2}\t\t{rendimento:F2}\t\t{montante:F2}");
+        Console.WriteLine($"{capital}\t{taxa * 100}%\t{meses} meses e {dias} dias\t{rendimento:F2}\t\t{montante:F2}");
         Console.WriteLine("----------------------------------------------------");
     }
 }
