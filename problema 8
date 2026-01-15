@@ -11,9 +11,9 @@ class Program
 
 class CalculadoraJuros
 {
-    public double CalcularMontante(double capital, double taxa, double periodo)
+    public double CalcularMontante(double capital, double taxa)
     {
-        return capital * Math.Pow(1 + taxa, periodo);
+        return capital * (1 + taxa);
     }
 }
 
@@ -24,46 +24,60 @@ class Menu
     private int meses = 8;
     private int dias = 10;
 
+    private double[] capitais = { 1000, 5500, 12000 };
+    private double[] taxas = { 0.03, 0.0248, 0.02 };
+
     public void Exibir()
     {
-        double periodoTotal = meses + (dias / 30.0);
-        double periodoResgate = 5;
+        Console.WriteLine("=== MENU DE SIMULAÇÃO ===\n");
+
+        Console.WriteLine("Escolha o capital:");
+        for (int i = 0; i < capitais.Length; i++)
+            Console.WriteLine($"{i + 1} - R$ {capitais[i]}");
+
+        Console.Write("Opção: ");
+        int opCapital = int.Parse(Console.ReadLine()) - 1;
+
+        Console.WriteLine("\nEscolha a taxa:");
+        for (int i = 0; i < taxas.Length; i++)
+            Console.WriteLine($"{i + 1} - {taxas[i] * 100}%");
+
+        Console.Write("Opção: ");
+        int opTaxa = int.Parse(Console.ReadLine()) - 1;
+
+        double capital = capitais[opCapital];
+        double taxa = taxas[opTaxa];
+
         double percentualResgate = 0.5;
 
-        double[] capitais = { 1000, 5500, 12000 };
-        double[] taxas = { 0.03, 0.0248, 0.02 };
+        Console.WriteLine("\n=== SIMULAÇÃO MÊS A MÊS ===\n");
+        Console.WriteLine("Mês\tSaldo Inicial\tJuros\t\tResgate\t\tSaldo Final");
 
-        Console.WriteLine("=== TABELA DE SIMULAÇÕES - PROBLEMA 8 ===\n");
-        Console.WriteLine("Valor\tTaxa\tResgate(5º)\tSaldo Final\tRendimento");
-
-        foreach (double capitalInicial in capitais)
+        for (int mes = 1; mes <= meses; mes++)
         {
-            foreach (double taxa in taxas)
+            double saldoInicial = capital;
+
+            double saldoComJuros = calculadora.CalcularMontante(capital, taxa);
+            double juros = saldoComJuros - saldoInicial;
+
+            double resgate = 0;
+
+            if (mes == 5)
             {
-                
-                double montanteAteMes5 =
-                    calculadora.CalcularMontante(capitalInicial, taxa, periodoResgate);
-
-                double valorResgatado = montanteAteMes5 * percentualResgate;
-
-                double saldoNoMes5 = montanteAteMes5 - valorResgatado;
-
-                double periodoRestante = periodoTotal - periodoResgate;
-
-                double montanteFinal =
-                    calculadora.CalcularMontante(saldoNoMes5, taxa, periodoRestante);
-
-                double totalRecebido = valorResgatado + montanteFinal;
-
-                double rendimentoTotal = totalRecebido - capitalInicial;
-
-                Console.WriteLine(
-                    $"{capitalInicial}\t{taxa * 100}%\t{valorResgatado:F2}\t\t{montanteFinal:F2}\t\t{rendimentoTotal:F2}"
-                );
+                resgate = saldoComJuros * percentualResgate;
+                saldoComJuros -= resgate;
             }
+
+            capital = saldoComJuros;
+
+            Console.WriteLine(
+                $"{mes}\t{saldoInicial:F2}\t\t{juros:F2}\t\t{resgate:F2}\t\t{capital:F2}"
+            );
         }
 
         Console.WriteLine("\nPeríodo total: 8 meses e 10 dias");
         Console.WriteLine("Resgate parcial de 50% no 5º mês");
+        Console.WriteLine("Obs: Os 10 dias finais não alteram o cálculo mensal.");
     }
 }
+
