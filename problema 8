@@ -1,0 +1,69 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Menu menu = new Menu();
+        menu.Exibir();
+    }
+}
+
+class CalculadoraJuros
+{
+    public double CalcularMontante(double capital, double taxa, double periodo)
+    {
+        return capital * Math.Pow(1 + taxa, periodo);
+    }
+}
+
+class Menu
+{
+    private CalculadoraJuros calculadora = new CalculadoraJuros();
+
+    private int meses = 8;
+    private int dias = 10;
+
+    public void Exibir()
+    {
+        double periodoTotal = meses + (dias / 30.0);
+        double periodoResgate = 5;
+        double percentualResgate = 0.5;
+
+        double[] capitais = { 1000, 5500, 12000 };
+        double[] taxas = { 0.03, 0.0248, 0.02 };
+
+        Console.WriteLine("=== TABELA DE SIMULAÇÕES - PROBLEMA 8 ===\n");
+        Console.WriteLine("Valor\tTaxa\tResgate(5º)\tSaldo Final\tRendimento");
+
+        foreach (double capitalInicial in capitais)
+        {
+            foreach (double taxa in taxas)
+            {
+                
+                double montanteAteMes5 =
+                    calculadora.CalcularMontante(capitalInicial, taxa, periodoResgate);
+
+                double valorResgatado = montanteAteMes5 * percentualResgate;
+
+                double saldoNoMes5 = montanteAteMes5 - valorResgatado;
+
+                double periodoRestante = periodoTotal - periodoResgate;
+
+                double montanteFinal =
+                    calculadora.CalcularMontante(saldoNoMes5, taxa, periodoRestante);
+
+                double totalRecebido = valorResgatado + montanteFinal;
+
+                double rendimentoTotal = totalRecebido - capitalInicial;
+
+                Console.WriteLine(
+                    $"{capitalInicial}\t{taxa * 100}%\t{valorResgatado:F2}\t\t{montanteFinal:F2}\t\t{rendimentoTotal:F2}"
+                );
+            }
+        }
+
+        Console.WriteLine("\nPeríodo total: 8 meses e 10 dias");
+        Console.WriteLine("Resgate parcial de 50% no 5º mês");
+    }
+}
