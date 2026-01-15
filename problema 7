@@ -26,12 +26,9 @@ class Menu
 
     public void Exibir()
     {
-        double periodoTotal = meses + (dias / 30.0);
-        double periodoResgate = 5;
-        double percentualResgate = 0.5;
+        Console.WriteLine("=== CALCULADORA DE JUROS COMPOSTOS - TABELA MÊS A MÊS ===\n");
 
-        Console.WriteLine("=== CALCULADORA DE JUROS COMPOSTOS - PROBLEMA 7 ===\n");
-
+        // Escolha do capital
         Console.WriteLine("Escolha o Valor Presente Investido:");
         Console.WriteLine("1 - 1000");
         Console.WriteLine("2 - 5500");
@@ -44,7 +41,7 @@ class Menu
             Console.WriteLine("Opção inválida.");
         }
 
-        double capitalInicial = opcaoValor switch
+        double capital = opcaoValor switch
         {
             1 => 1000,
             2 => 5500,
@@ -70,28 +67,43 @@ class Menu
             3 => 0.02
         };
 
-        double montanteNoResgate =
-            calculadora.CalcularMontante(capitalInicial, taxa, periodoResgate);
+        double jurosAcumulados = 0;
 
-        double valorResgatado = montanteNoResgate * percentualResgate;
+        DateTime dataInicial = DateTime.Now;
+        DateTime dataAtual = dataInicial;
 
-        double saldoRestante = montanteNoResgate - valorResgatado;
+        Console.WriteLine("\nData\t\tMês\tCapital\t\tJuros do Mês\tJuros Acumul.\tResgate\t\tSaldo Total");
 
-        double periodoRestante = periodoTotal - periodoResgate;
+        for (int mes = 1; mes <= meses; mes++)
+        {
+            double saldoInicial = capital;
 
-        double montanteFinal =
-            calculadora.CalcularMontante(saldoRestante, taxa, periodoRestante);
+            double jurosDoMes = capital * taxa;
+            jurosAcumulados += jurosDoMes;
 
-        double totalRecebido = valorResgatado + montanteFinal;
+            double resgate = 0;
 
-        double rendimentoTotal = totalRecebido - capitalInicial;
+            if (mes == 5)
+            {
+                resgate = jurosAcumulados;
+                jurosAcumulados = 0; 
+            }
 
-        Console.WriteLine("\n----------------------------------------------------");
-        Console.WriteLine($"Valor inicial:           {capitalInicial:F2}");
-        Console.WriteLine($"Taxa de juros mensal:    {taxa * 100}%");
-        Console.WriteLine($"Resgate no 5º mês (50%): {valorResgatado:F2}");
-        Console.WriteLine($"Saldo final investido:   {montanteFinal:F2}");
-        Console.WriteLine($"Rendimento total:        {rendimentoTotal:F2}");
-        Console.WriteLine("----------------------------------------------------");
+            double saldoTotal = capital + jurosAcumulados;
+
+            Console.WriteLine(
+                $"{dataAtual:dd/MM/yyyy}\t{mes}\t{capital:F2}\t\t{jurosDoMes:F2}\t\t{jurosAcumulados:F2}\t\t{resgate:F2}\t\t{saldoTotal:F2}"
+            );
+
+            dataAtual = dataAtual.AddMonths(1);
+        }
+
+        dataAtual = dataAtual.AddDays(dias);
+
+        Console.WriteLine("\nResumo Final:");
+        Console.WriteLine($"Data inicial: {dataInicial:dd/MM/yyyy}");
+        Console.WriteLine($"Data final:   {dataAtual:dd/MM/yyyy}");
+        Console.WriteLine("Período total: 8 meses e 10 dias");
+        Console.WriteLine("Resgate TOTAL do rendimento acumulado no 5º mês");
     }
 }
