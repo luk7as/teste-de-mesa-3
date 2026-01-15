@@ -9,18 +9,8 @@ class Program
     }
 }
 
-class CalculadoraJuros
-{
-    public double CalcularMontante(double capital, double taxa)
-    {
-        return capital * (1 + taxa);
-    }
-}
-
 class Menu
 {
-    private CalculadoraJuros calculadora = new CalculadoraJuros();
-
     private int meses = 8;
     private int dias = 10;
 
@@ -29,7 +19,7 @@ class Menu
 
     public void Exibir()
     {
-        Console.WriteLine("=== MENU DE SIMULAÇÃO ===\n");
+        Console.WriteLine("=== MENU DE SIMULAÇÃO - PROBLEMA 8 ===\n");
 
         Console.WriteLine("Escolha o capital:");
         for (int i = 0; i < capitais.Length; i++)
@@ -48,36 +38,42 @@ class Menu
         double capital = capitais[opCapital];
         double taxa = taxas[opTaxa];
 
-        double percentualResgate = 0.5;
+        double jurosAcumulados = 0;
+
+        DateTime dataInicial = DateTime.Now;
+        DateTime dataAtual = dataInicial;
 
         Console.WriteLine("\n=== SIMULAÇÃO MÊS A MÊS ===\n");
-        Console.WriteLine("Mês\tSaldo Inicial\tJuros\t\tResgate\t\tSaldo Final");
+        Console.WriteLine("Data\t\tMês\tCapital\t\tJuros do Mês\tJuros Acum.\tResgate\t\tSaldo Total");
 
         for (int mes = 1; mes <= meses; mes++)
         {
-            double saldoInicial = capital;
-
-            double saldoComJuros = calculadora.CalcularMontante(capital, taxa);
-            double juros = saldoComJuros - saldoInicial;
+            double jurosDoMes = capital * taxa;
+            jurosAcumulados += jurosDoMes;
 
             double resgate = 0;
 
             if (mes == 5)
             {
-                resgate = saldoComJuros * percentualResgate;
-                saldoComJuros -= resgate;
+                resgate = jurosAcumulados;
+                jurosAcumulados = 0;
             }
 
-            capital = saldoComJuros;
+            double saldoTotal = capital + jurosAcumulados;
 
             Console.WriteLine(
-                $"{mes}\t{saldoInicial:F2}\t\t{juros:F2}\t\t{resgate:F2}\t\t{capital:F2}"
+                $"{dataAtual:dd/MM/yyyy}\t{mes}\t{capital:F2}\t\t{jurosDoMes:F2}\t\t{jurosAcumulados:F2}\t\t{resgate:F2}\t\t{saldoTotal:F2}"
             );
+
+            dataAtual = dataAtual.AddMonths(1);
         }
 
-        Console.WriteLine("\nPeríodo total: 8 meses e 10 dias");
-        Console.WriteLine("Resgate parcial de 50% no 5º mês");
-        Console.WriteLine("Obs: Os 10 dias finais não alteram o cálculo mensal.");
+        dataAtual = dataAtual.AddDays(dias);
+
+        Console.WriteLine("\nResumo Final:");
+        Console.WriteLine($"Data inicial: {dataInicial:dd/MM/yyyy}");
+        Console.WriteLine($"Data final:   {dataAtual:dd/MM/yyyy}");
+        Console.WriteLine("Período total: 8 meses e 10 dias");
+        Console.WriteLine("Resgate TOTAL do rendimento acumulado no 5º mês");
     }
 }
-
